@@ -6,8 +6,6 @@ VERSION=0.0.1
 
 URL=${BASE_URL}/${VERSION}
 
-FINALIZED=
-
 function publish {
   curl \
     --fail \
@@ -16,9 +14,11 @@ function publish {
     ${URL}/publish &> /dev/null
 }
 
+FINALIZED=
+
 function finalize {
   echo "Publishing uploaded artifacts..."
-  publish
+  publish && FINALIZED=true
 }
 
 function discard {
@@ -78,4 +78,4 @@ do
   echo
 done
 
-finalize && FINALIZED=true
+finalize
