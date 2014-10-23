@@ -53,6 +53,14 @@ trap "discard" EXIT
 
 files=($(find build-support -type f))
 count=${#files[@]}
+
+echo "Uploading ${count} files to http://dl.bintray.com/pantsbuild/bin"
+echo
+echo "Press CTRL-C at any time to discard the uploaded artifacts; otherwise,"
+echo "the artifacts will be finalized and published en-masse just before the"
+echo "completes."
+echo
+
 for i in $(seq 1 ${count})
 do
   file=${files[$((i-1))]}
