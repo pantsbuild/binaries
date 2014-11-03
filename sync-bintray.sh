@@ -65,16 +65,15 @@ for i in $(seq 1 ${count})
 do
   file=${files[$((i-1))]}
   echo "[${i}/${count}] Uploading ${file}"
-  (
-    curl \
-      --fail \
-      --netrc \
-      --upload-file ${file} \
-      -o /dev/null \
-      --progress-bar \
-      -# \
-      ${URL}/${file}
-  ) || ( discard && exit 1 )
+  curl \
+    --fail \
+    --netrc \
+    --upload-file ${file} \
+    -o /dev/null \
+    --progress-bar \
+    -# \
+    ${URL}/${file} || \
+  exit 1
   echo
 done
 
