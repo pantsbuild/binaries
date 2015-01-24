@@ -72,7 +72,7 @@ do
     -o /dev/null \
     --progress-bar \
     -# \
-    ${URL}/${file} || \
+    "${URL}/${file}?override=1" || \
   exit 1
   echo
 done
