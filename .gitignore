@@ -1,0 +1,10 @@
+.vagrant/
+
+/protobuf-2.4.1.tar.bz2
+/protobuf-2.4.1/
+
+/pantsbuild-binaries-0.5.0-finagle.tar.gz
+/thrift-0.5.0-finagle-pantsbuild-binaries-0.5.0-finagle/
+
+/thrift-0.7.0.tar.gz
+/thrift-0.7.0/
