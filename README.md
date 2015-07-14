@@ -19,4 +19,7 @@ Requires [vagrant](https://www.vagrantup.com/)
 osx
 ---
 
-TODO...
+We have no controlled build environment solution like we do for linux, so you'll need to get your hands on an OSX machine.  With that in hand:
+
++ Run the build-\*.sh script corresponding to the binary you wish to build
++ manually move the binary from the build tree to its home in build-support/...
