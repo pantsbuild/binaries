@@ -1,33 +1,13 @@
 #!/usr/bin/env bash
 
 API_HOST=api.bintray.com
-BASE_URL=https://${API_HOST}/content/pantsbuild/bin/pants-support-binaries
+
+ORG=pantsbuild
+REPOSITORY=bin
+PACKAGE=pants-support-binaries
 VERSION=0.0.1
 
-URL=${BASE_URL}/${VERSION}
-
-function publish {
-  curl \
-    --fail \
-    --netrc \
-    --data "$1" \
-    ${URL}/publish &> /dev/null
-}
-
-FINALIZED=
-
-function finalize {
-  echo "Publishing uploaded artifacts..."
-  publish && FINALIZED=true
-}
-
-function discard {
-  if [[ -z "${FINALIZED}" ]]
-  then
-    echo -e "\nDiscarding uploaded artifacts..."
-    publish '{"discard": true}'
-  fi
-}
+REPO_KEY="${ORG}/${REPOSITORY}/${PACKAGE}"
 
 function check_netrc {
   [[ -f ~/.netrc && -n "$(grep -E "^\s*machine\s+${API_HOST}\s*$" ~/.netrc)" ]]
@@ -36,7 +16,7 @@ function check_netrc {
 if ! check_netrc
 then
   echo "In order to publish bintray binaries you need an account"
-  echo "with membership in the pantsbuild org [1]."
+  echo "with membership in the ${ORG} org [1]."
   echo
   echo "This account will need to be added to a ~/.netrc entry as follows:"
   echo 
@@ -44,37 +24,60 @@ then
   echo "  login <bintray username>"
   echo "  password <bintray api key [2]>"
   echo
-  echo "[1] https://bintray.com/pantsbuild"
+  echo "[1] https://bintray.com/${ORG}"
   echo "[2] https://bintray.com/docs/interacting/interacting_apikeys.html"
   exit 1
 fi
 
-trap "discard" EXIT
-
-files=($(find build-support -type f))
-count=${#files[@]}
-
-echo "Uploading ${count} files to https://dl.bintray.com/pantsbuild/bin"
+echo "Uploading artifacts to https://dl.bintray.com/${ORG}/${REPOSITORY}"
 echo
 echo "Press CTRL-C at any time to discard the uploaded artifacts; otherwise,"
 echo "the artifacts will be finalized and published en-masse just before the"
 echo "script completes."
 echo
 
-for i in $(seq 1 ${count})
-do
-  file=${files[$((i-1))]}
-  echo "[${i}/${count}] Uploading ${file}"
+function hash_local_files() {
+  git ls-files | \
+  grep -v -E ".sha1$" | \
+  xargs openssl sha1 | \
+  sed -E "s/^SHA1\(([^)]+)\)= ([0-9a-f]+)$/\1 \2/"
+}
+
+function hash_remote_files() {
+  curl --netrc -sS https://${API_HOST}/packages/${REPO_KEY}/files | \
+  python2.7 -c '
+import json
+import sys
+
+for entry in json.load(sys.stdin):
+  print("{} {}".format(entry["path"], entry["sha1"]))
+'
+}
+
+files=($(comm -2 -3 <(hash_local_files | sort) <(hash_remote_files | sort) | cut -d' ' -f1))
+
+if (( ${#files[@]} > 0 ))
+then
+  # NB: Archives sent to bintray for exploding must not have directory entries inside, just the
+  # file entries; thus the --no-dir-entries argument to zip below is critical.
+  archive_dir=$(mktemp -dt "repo.XXXXXX") && \
+  trap "rm -rf ${archive_dir}" EXIT && \
+  archive="${archive_dir}/repo.zip" && \
+  echo "${files[@]}" | xargs zip -q --no-dir-entries ${archive} && \
+  (
+    echo "A zip with the following contents will be uploaded:"
+    echo "=="
+    zipinfo -1 ${archive}
+  ) | less && \
   curl \
     --fail \
     --netrc \
-    --upload-file ${file} \
+    --upload-file ${archive} \
     -o /dev/null \
     --progress-bar \
     -# \
-    "${URL}/${file}?override=1" || \
-  exit 1
-  echo
-done
+    "https://${API_HOST}/content/${REPO_KEY}/${VERSION}/repo.zip?override=1&explode=1&publish=1"
+fi
 
-finalize
+echo "Bintray is up to date!"
+
