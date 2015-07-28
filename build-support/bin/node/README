@@ -2,6 +2,5 @@ This directory hierarchy contains node binaries compiled for the various
 platforms supported by pants.
 
 Run ./build-node-0.12.7.sh
-It will create node-v0.12.7/bin/node and node-v0.12.7/bin/npm.
-Please place node-v0.12.7/bin/node in the right directory hierarchy.
-Please place node-v0.12.7/bin/npm in build-support/bin/npm directory hierarchy. 
+It will download the the binary tarballi for all platforms.
+Please place it right directory structure.
