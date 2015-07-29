@@ -2,5 +2,6 @@ This directory hierarchy contains node binaries compiled for the various
 platforms supported by pants.
 
 Run ./build-node-0.12.7.sh
-It will download the the binary tarballi for all platforms.
+It will download the the binary tarball for all platforms.
+Unzip it and create a tar where bin/ and lib are at the root of the tar.
 Please place it right directory structure.
