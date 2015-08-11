@@ -55,6 +55,18 @@ for entry in json.load(sys.stdin):
 }
 
 files=($(comm -2 -3 <(hash_local_files | sort) <(hash_remote_files | sort) | cut -d' ' -f1))
+if [[ -n "${FILTER}" ]]
+then
+  all_files="${files[@]}"
+  files=()
+  for file in ${all_files}
+  do
+    if echo ${file} | grep "${FILTER}"
+    then
+      files+=(${file})
+    fi
+  done
+fi
 
 if (( ${#files[@]} > 0 ))
 then
