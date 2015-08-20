@@ -1,7 +1,7 @@
 #!/bin/sh
 
 ARCHS=(
-  darwin-amd64-osx10.6
+  darwin-amd64
   linux-386
   linux-amd64
 )
