@@ -41,6 +41,7 @@ sh ./configure \
   --without-php_extension \
   --without-ruby \
   --without-haskell \
-  --without-go && \
+  --without-go \
+  --without-nodejs && \
   make clean && \
   make LDFLAGS="$LDFLAGS"
