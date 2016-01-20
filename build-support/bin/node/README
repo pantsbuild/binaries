@@ -1,7 +1,8 @@
 This directory hierarchy contains node binaries compiled for the various
 platforms supported by pants.
 
-Run ./build-node-0.12.7.sh
-It will download the the binary tarball for all platforms.
-Unzip it and create a tar where bin/ and lib are at the root of the tar.
-Please place it right directory structure.
+Run ./build-node-4.2.4.sh
+It will download the the binary tarball for the linux-x86, linux-x64, and darwin-x64 platforms,
+extract each and re-create the archive with the contents under a folder just called "node",
+then place copies or symlinks under each Mac/Linux platform. (The Mac directory has just one copy,
+under 10.11, and the other OS X versions have symlinks to that copy.)
