@@ -2,12 +2,14 @@
 
 VERSION="v4.2.4"
 
+# ARCHES and DESTINATION_DIRECTORIES must be the same length.
+# They are, respectively, the arch names used in tar files from nodejs.org,
+# and the local destination directories for each arch.
 ARCHES=(
   linux-x86
   linux-x64
   darwin-x64
 )
-
 DESTINATION_DIRECTORIES=(
   linux/i386
   linux/x86_64
