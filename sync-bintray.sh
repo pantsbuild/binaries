@@ -75,7 +75,7 @@ then
   read -n 1 -p "Press any key to continue, or hit ctrl+c to abort..."
 
   for f in ${files[@]}; do
-    echo -n -e "${f}:\n  "
+    echo -n -e "\n${f}:\n  "
     statuscode=$(curl \
       --netrc \
       --output /dev/stderr \
