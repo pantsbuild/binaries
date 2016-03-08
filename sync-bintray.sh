@@ -5,7 +5,7 @@ API_HOST=api.bintray.com
 ORG=pantsbuild
 REPOSITORY=bin
 PACKAGE=pants-support-binaries
-VERSION=0.0.3
+VERSION=0.0.4
 
 REPO_KEY="${ORG}/${REPOSITORY}/${PACKAGE}"
 
@@ -29,16 +29,12 @@ then
   exit 1
 fi
 
-echo "Uploading artifacts to https://dl.bintray.com/${ORG}/${REPOSITORY}"
-echo
-echo "Press CTRL-C at any time to discard the uploaded artifacts; otherwise,"
-echo "the artifacts will be finalized and published en-masse just before the"
-echo "script completes."
+echo -e "Determining which artifacts to upload to:\n  https://dl.bintray.com/${ORG}/${REPOSITORY}"
 echo
 
 function hash_local_files() {
   git ls-files | \
-  grep -v -E ".sha1$" | \
+  grep -v -E '.sha1$' | \
   xargs openssl sha1 | \
   sed -E "s/^SHA1\(([^)]+)\)= ([0-9a-f]+)$/\1 \2/"
 }
@@ -70,26 +66,27 @@ fi
 
 if (( ${#files[@]} > 0 ))
 then
-  # NB: Archives sent to bintray for exploding must not have directory entries inside, just the
-  # file entries; thus the --no-dir-entries argument to zip below is critical.
-  archive_dir=$(mktemp -dt "repo.XXXXXX") && \
-  trap "rm -rf ${archive_dir}" EXIT && \
-  archive="${archive_dir}/repo.zip" && \
-  echo "${files[@]}" | xargs zip -q --no-dir-entries ${archive} && \
-  (
-    echo "A zip with the following contents will be uploaded:"
-    echo "=="
-    zipinfo -1 ${archive}
-  ) | less && \
-  curl \
-    --fail \
-    --netrc \
-    --upload-file ${archive} \
-    -o /dev/null \
-    --progress-bar \
-    -# \
-    "https://${API_HOST}/content/${REPO_KEY}/${VERSION}/repo.zip?override=1&explode=1&publish=1"
+  echo "The following files will be uploaded to version ${VERSION}:"
+  echo "=="
+  for f in ${files[@]}; do
+    echo "  $f"
+  done
+
+  read -n 1 -p "Press any key to continue, or hit ctrl+c to abort..."
+
+  for f in ${files[@]}; do
+    echo -n -e "\n${f}:\n  "
+    statuscode=$(curl \
+      --netrc \
+      --output /dev/stderr \
+      --write-out "%{http_code}" \
+      --upload-file $f \
+      --progress-bar \
+      "https://${API_HOST}/content/${REPO_KEY}/${VERSION}/${f}?override=1&publish=1")
+  done
+  echo "Finished."
+else
+  echo "Bintray is already up to date!"
 fi
 
-echo "Bintray is up to date!"
 
