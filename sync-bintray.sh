@@ -5,7 +5,7 @@ API_HOST=api.bintray.com
 ORG=pantsbuild
 REPOSITORY=bin
 PACKAGE=pants-support-binaries
-VERSION=0.0.4
+VERSION=0.0.5
 
 REPO_KEY="${ORG}/${REPOSITORY}/${PACKAGE}"
 
