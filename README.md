@@ -21,5 +21,11 @@ osx
 
 We have no controlled build environment solution like we do for linux, so you'll need to get your hands on an OSX machine.  With that in hand:
 
+Requires `libtool`, `gettext`, `autoconf` (for flex)
+
+N.B. Homebrew will install `gettext` but will not add it to your path.
+
+      export PATH=${PATH}:/usr/local/opt/gettext/bin
+
 + Run the build-\*.sh script corresponding to the binary you wish to build
 + manually move the binary from the build tree to its home in build-support/...

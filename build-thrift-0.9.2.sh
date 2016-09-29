@@ -1,21 +1,26 @@
 #!/bin/sh
 
+root=$(pwd -P)
+INSTALL_PREFIX=install_root
+
 # NB: The custom bison we set up here works around OSX Yosemite having
 # bison 2.3 which is too old for the thrift 0.9.2 configure script.
 curl -O http://ftp.gnu.org/gnu/bison/bison-2.5.1.tar.gz && \
 rm -rf bison-2.5.1 && \
 tar -xzf bison-2.5.1.tar.gz && (
   cd bison-2.5.1 && \
-  sh ./configure --prefix=$(pwd -P)/install && \
+  sh ./configure --prefix="$(pwd -P)/$INSTALL_PREFIX" && \
   make install
 )
 
 # NB: We need flex for the static link
-curl -O http://iweb.dl.sourceforge.net/project/flex/flex-2.5.39.tar.gz && \
-rm -rf flex-2.5.39 && \
-tar -xzf flex-2.5.39.tar.gz && (
-  cd flex-2.5.39 && \
-  sh ./configure --prefix=$(pwd -P)/install && \
+# Upgraded to 2.6.0 to pick up OSX linker fix: https://sourceforge.net/p/flex/bugs/182/
+curl -L -O http://sourceforge.mirrorservice.org/f/fl/flex/flex-2.6.0.tar.gz && \
+rm -rf flex-2.6.0 && \
+tar -xzf flex-2.6.0.tar.gz && (
+  cd flex-2.6.0 && \
+  ./autogen.sh
+  sh ./configure --prefix="$(pwd -P)/$INSTALL_PREFIX" && \
   make install
 )
 
@@ -24,8 +29,8 @@ tar -xzf flex-2.5.39.tar.gz && (
 curl -O http://archive.apache.org/dist/thrift/0.9.2/thrift-0.9.2.tar.gz && \
 rm -rf thrift-0.9.2 && \
 tar -xzf thrift-0.9.2.tar.gz && \ 
-export PATH=$(pwd -P)/bison-2.5.1/install/bin:$(pwd -P)/flex-2.5.39/install/bin:$PATH && \
-LDFLAGS="-all-static -L$(pwd -P)/flex-2.5.39/install/lib" && \
+export PATH=$(pwd -P)/bison-2.5.1/$INSTALL_PREFIX/bin:$(pwd -P)/flex-2.6.0/$INSTALL_PREFIX/bin:$PATH && \
+LDFLAGS="-all-static -L$(pwd -P)/flex-2.6.0/$INSTALL_PREFIX/lib" && \
 cd thrift-0.9.2 && \
 sh ./configure \
   --disable-shared \
@@ -42,5 +47,6 @@ sh ./configure \
   --without-ruby \
   --without-haskell \
   --without-go && \
-  make clean && \
-  make LDFLAGS="$LDFLAGS"
+make clean && \
+make LDFLAGS="$LDFLAGS"
+mv compiler/cpp/thrift ${root}/thrift-0.9.2.binary
