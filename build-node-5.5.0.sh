@@ -2,21 +2,7 @@
 
 VERSION="v5.5.0"
 
-# ARCHES and DESTINATION_DIRECTORIES must be the same length.
-# They are, respectively, the arch names used in tar files from nodejs.org,
-# and the local destination directories for each arch.
-ARCHES=(
-  linux-x86
-  linux-x64
-  darwin-x64
-)
-DESTINATION_DIRECTORIES=(
-  linux/i386
-  linux/x86_64
-  mac/10.11
-)
-
-CURRENT_MAC_VERSION="10.11"
+CURRENT_MAC_VERSION="10.12"
 
 ADDITIONAL_MAC_VERSIONS=(
   10.6
@@ -24,6 +10,23 @@ ADDITIONAL_MAC_VERSIONS=(
   10.8
   10.9
   10.10
+  10.11
+)
+
+# ARCHES and DESTINATION_DIRECTORIES must be the same length.
+# They are, respectively, the arch names used in tar files from nodejs.org,
+# and the local destination directories for each arch.
+
+ARCHES=(
+  linux-x86
+  linux-x64
+  darwin-x64
+)
+
+DESTINATION_DIRECTORIES=(
+  linux/i386
+  linux/x86_64
+  mac/${CURRENT_MAC_VERSION}
 )
 
 function build_node() {
