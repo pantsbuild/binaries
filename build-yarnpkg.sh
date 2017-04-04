@@ -23,7 +23,7 @@ ARCH_DIRECTORIES=(
 wget https://github.com/yarnpkg/yarn/releases/download/${VERSION}/yarn-${VERSION}.tar.gz
 mv yarn-${VERSION}.tar.gz yarnpkg-${VERSION}.tar.gz
 
-for arch_directory ${ARCH_DIRECTORIES[@]}
+for arch_directory in ${ARCH_DIRECTORIES[@]}
 do
   echo "Copying tar for yarnpkg ${VERSION}, ${arch_directory}..."
   full_dest_dir="build-support/bin/yarnpkg/${arch_directory}/${VERSION}"
