@@ -1,8 +1,6 @@
-#!/bin/sh -exo pipefail
+#!/bin/bash -exuo pipefail
 
-# Refer to build-node-6.9.5
-
-VERSION="v0.19.1"
+VERSION=${1:-"v0.19.1"}
 
 CURRENT_MAC_VERSION="10.12"
 
