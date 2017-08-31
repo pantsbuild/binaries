@@ -2,9 +2,9 @@
 
 set -eo pipefail
 
-WATCHMAN_VERSION="4.5.0"
-PCRE_VERSION="8.38"
-PCRE_SHASUM="3ab418d0026c2a4e693ec783bd60660debc32b8f"
+WATCHMAN_VERSION="4.9.0"
+PCRE_VERSION="8.41"
+PCRE_SHASUM="dddf0995aefe04cc6267c1448ffef0e7b0560ec0"
 
 echo "*****************************"
 echo "building watchman ${WATCHMAN_VERSION}"
