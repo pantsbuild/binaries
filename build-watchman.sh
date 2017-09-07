@@ -53,7 +53,7 @@ pushd $BUILD_DIR
   pushd watchman
     git checkout v${WATCHMAN_VERSION}
     ./autogen.sh
-    ./configure --with-pcre=../pcre_install/bin/pcre-config --without-python
+    ./configure --with-pcre=../pcre_install/bin/pcre-config --disable-statedir --without-python
     make
     mkdir -p $WATCHMAN_DEST_DIR
     cp watchman $WATCHMAN_DEST_DIR/
