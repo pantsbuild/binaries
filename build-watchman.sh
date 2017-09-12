@@ -27,7 +27,8 @@ case $(uname -s) in
            SHASUM="sha1sum";
            OPENSSL_ARCH="linux-x86_64";
            CFLAGS="-fPIC -fwrapv -O2";
-           CXXFLAGS="${CFLAGS} -I${OPENSSL_INSTALL_DIR}/include" LDFLAGS="-L${OPENSSL_INSTALL_DIR}/lib";
+           CXXFLAGS="${CFLAGS} -I${OPENSSL_INSTALL_DIR}/include";
+           LDFLAGS="-L${OPENSSL_INSTALL_DIR}/lib";
            ;;
   *Darwin*) PLATFORM="mac";
             ARCH=`sw_vers -productVersion | cut -f1,2 -d.`;
@@ -35,6 +36,7 @@ case $(uname -s) in
             OPENSSL_ARCH="darwin64-x86_64-cc";
             CFLAGS="-fwrapv -Os";
             CXXFLAGS="${CFLAGS}";
+            LDFLAGS="";
             ;;
   *) echo "unsupported platform!"; exit 1;;
 esac
@@ -85,7 +87,7 @@ pushd $BUILD_DIR
   pushd watchman
     git checkout v${WATCHMAN_VERSION}
     ./autogen.sh
-    CXXFLAGS="${CXXFLAGS}" ./configure --with-pcre=../pcre_install/bin/pcre-config --disable-statedir --without-python
+    CXXFLAGS="${CXXFLAGS}" LDFLAGS="${LDFLAGS}" ./configure --with-pcre=../pcre_install/bin/pcre-config --disable-statedir --without-python
     make
     mkdir -p $WATCHMAN_DEST_DIR
     cp watchman $WATCHMAN_DEST_DIR/
