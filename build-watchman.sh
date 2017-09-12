@@ -26,15 +26,15 @@ case $(uname -s) in
            ARCH=`uname -p`;
            SHASUM="sha1sum";
            OPENSSL_ARCH="linux-x86_64";
-           CFLAGS="-fPIC -fwrapv -O2"
-           CXXFLAGS="${CFLAGS} -I${OPENSSL_INSTALL_DIR}/include" LDFLAGS="-L${OPENSSL_INSTALL_DIR}/lib"
+           CFLAGS="-fPIC -fwrapv -O2";
+           CXXFLAGS="${CFLAGS} -I${OPENSSL_INSTALL_DIR}/include" LDFLAGS="-L${OPENSSL_INSTALL_DIR}/lib";
            ;;
   *Darwin*) PLATFORM="mac";
             ARCH=`sw_vers -productVersion | cut -f1,2 -d.`;
             SHASUM="shasum";
             OPENSSL_ARCH="darwin64-x86_64-cc";
-            CFLAGS="-fwrapv -Os"
-            CXXFLAGS="${CFLAGS}"
+            CFLAGS="-fwrapv -Os";
+            CXXFLAGS="${CFLAGS}";
             ;;
   *) echo "unsupported platform!"; exit 1;;
 esac
