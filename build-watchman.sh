@@ -56,7 +56,7 @@ pushd $BUILD_DIR
   fi
   tar zxf $PCRE_TARBALL
   pushd $PCRE_DIR
-    ./configure --enable-static --disable-shared --prefix="${PCRE_INSTALL_DIR}"
+    CFLAGS="${CFLAGS}" ./configure --enable-static --disable-shared --prefix="${PCRE_INSTALL_DIR}"
     make
     make install
   popd
