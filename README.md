@@ -9,12 +9,12 @@ building
 linux
 -----
 
-Requires [vagrant](https://www.vagrantup.com/)
+Requires [docker](https://www.docker.com/)
 
-+ Change directories to the target arch.
-+ `vagrant up && vagrant ssh && cd /vagrant_data` to pop yourself in a controlled image back at this repo's root
++ Change directories to the root of this repository.
++ `docker run -v `pwd`:/pantsbuild-binaries -it --entrypoint /bin/bash python:2.7.13-wheezy && cd /pantsbuild-binaries` to pop yourself in a controlled image back at this repo's root
 + Run the build-\*.sh script corresponding to the binary you wish to build
-+ manually move the binary from the build tree to its home in build-support/...
++ Manually move the binary from the build tree to its home in build-support/...
 
 osx
 ---
