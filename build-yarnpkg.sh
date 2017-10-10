@@ -1,6 +1,6 @@
 #!/bin/bash -exuo pipefail
 
-VERSION=${1:-"v0.19.1"}
+VERSION=${1:-"v1.2.0"}
 
 CURRENT_MAC_VERSION="10.12"
 
@@ -14,7 +14,6 @@ ADDITIONAL_MAC_VERSIONS=(
 )
 
 ARCH_DIRECTORIES=(
-  linux/i386
   linux/x86_64
   mac/${CURRENT_MAC_VERSION}
 )
