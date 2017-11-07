@@ -19,9 +19,25 @@ ARCH_DIRECTORIES=(
   mac/${CURRENT_MAC_VERSION}
 )
 
+function build_yarnpkg()
+{
+  # Unpack and repack according to Pants runtime expectation.
+  rm -rf unpack && mkdir unpack && \
+  ${TAR_CMD} -xzf yarn-${VERSION}.tar.gz -C unpack && \
+  rm yarn-${VERSION}.tar.gz && \
+  mv unpack/yarn-${VERSION} unpack/dist && \
+  ${TAR_CMD} -czf yarn-temp.tar.gz -C unpack dist/ && \
+  rm -rf unpack && \
+  mv -f yarn-temp.tar.gz yarnpkg-${VERSION}.tar.gz
+}
+
+# Make it easy to use gnu-tar on Mac, since the default bsdtar that comes with OS X is not
+# compatible with gnu-tar.
+TAR_CMD="${TAR_CMD:-tar}"
+echo "Using tar command '${TAR_CMD}'"
 
 wget https://github.com/yarnpkg/yarn/releases/download/${VERSION}/yarn-${VERSION}.tar.gz
-mv yarn-${VERSION}.tar.gz yarnpkg-${VERSION}.tar.gz
+build_yarnpkg
 
 for arch_directory in ${ARCH_DIRECTORIES[@]}
 do
