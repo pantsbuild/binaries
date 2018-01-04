@@ -14,8 +14,8 @@ PCRE_TARBALL="${PCRE_DIR}.tar.gz"
 PCRE_URL="http://downloads.sourceforge.net/project/pcre/pcre/${PCRE_VERSION}/${PCRE_TARBALL}"
 PCRE_INSTALL_DIR="${DIRPATH}/${BUILD_DIR}/pcre_install"
 
-OPENSSL_VERSION="1.0.2l"
-OPENSSL_SHASUM="b58d5d0e9cea20e571d903aafa853e2ccd914138"
+OPENSSL_VERSION="1.0.2n"
+OPENSSL_SHASUM="0ca2957869206de193603eca6d89f532f61680b1"
 OPENSSL_DIR="openssl-${OPENSSL_VERSION}"
 OPENSSL_TARBALL="${OPENSSL_DIR}.tar.gz"
 OPENSSL_URL="https://www.openssl.org/source/${OPENSSL_TARBALL}"
@@ -41,7 +41,8 @@ case $(uname -s) in
   *) echo "unsupported platform!"; exit 1;;
 esac
 
-WATCHMAN_VERSION="4.9.0"
+# WATCHMAN_VERSION="4.9.0"
+WATCHMAN_VERSION="4.9.0-pants1"
 WATCHMAN_DEST_DIR="${DIRPATH}/build-support/bin/watchman/${PLATFORM}/${ARCH}/${WATCHMAN_VERSION}"
 
 echo "*****************************"
@@ -83,12 +84,18 @@ pushd $BUILD_DIR
   fi
 
   # Watchman build.
-  git clone https://github.com/facebook/watchman.git watchman
+  # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  # TODO: Restore this, the watchman version and the `git checkout` line below once
+  # https://github.com/facebook/watchman/pull/559 lands and is tagged/released.
+  # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  # git clone https://github.com/facebook/watchman.git watchman
+  git clone https://github.com/kwlzn/watchman.git watchman
   pushd watchman
-    git checkout v${WATCHMAN_VERSION}
+    # git checkout v${WATCHMAN_VERSION}
+    git checkout kwlzn/spawn_strategy
     ./autogen.sh
     CXXFLAGS="${CXXFLAGS}" LDFLAGS="${LDFLAGS}" ./configure --with-pcre=../pcre_install/bin/pcre-config --disable-statedir --without-python
-    make
+    make watchman
     mkdir -p $WATCHMAN_DEST_DIR
     cp watchman $WATCHMAN_DEST_DIR/
   popd
