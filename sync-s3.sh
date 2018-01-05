@@ -2,15 +2,17 @@
 
 ROOT="$(git rev-parse --show-toplevel)"
 
-if ! which aws
+cd "${ROOT}/build-support"
+
+if ! aws s3 sync --acl public-read . s3://binaries.pantsbuild.org
 then
+  echo
   echo "In order to run $0 you must 1st install AWS command line tools."
   echo "See: http://docs.aws.amazon.com/cli/latest/userguide/installing.html"
   echo
-  echo "You'll also need to configure credentials for the pantsbuild IAM user."
+  echo "You'll also need to configure credentials for your IAM user. If you're using MFA,"
+  echo "see: https://aws.amazon.com/premiumsupport/knowledge-center/authenticate-mfa-cli/"
+  echo
   exit 1
 fi
 
-cd "${ROOT}/build-support"
-
-aws s3 sync --acl public-read . s3://binaries.pantsbuild.org
