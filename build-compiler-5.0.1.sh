@@ -21,6 +21,30 @@ MAKE_JOBS="${MAKE_JOBS:-2}"
 
 mkdir -p "$LLVM_RELEASE_BUILD_DIRNAME"
 
+CLANG_BINARIES=(
+  clang
+  clang++
+  clang-"${CORRESPONDING_CLANG_BIN_VERSION}"
+)
+
+function extract-required-files-from-unpacked-llvm {
+  local -r unpacked_llvm_dir="$1"
+  local -r pants_output_archive_name="$2"
+
+  mkdir -p bin/ include/
+
+  for bin_path in ${CLANG_BINARIES[@]}; do
+    cp "${unpacked_llvm_dir}/bin/${bin_path}" bin/
+  done
+
+  find "$unpacked_llvm_dir"/lib/clang/"$LLVM_VERSION"/include \
+       -type f \
+       -name '*.h' \
+       -exec cp '{}' include/ '+'
+
+  tar czf "$pants_output_archive_name" bin/ include/
+}
+
 
 ## MacOS (LLVM-packaged release binaries)
 MACOS_REVS=(
@@ -32,16 +56,21 @@ MACOS_REVS=(
   10.12
   10.13
 )
+LLVM_TMP_MACOS_PKG_DIR='llvm-macos-pkg'
 
 pushd "$LLVM_RELEASE_BUILD_DIRNAME"
 
 curl -L -O "https://releases.llvm.org/${LLVM_VERSION}/clang+llvm-${LLVM_VERSION}-x86_64-apple-darwin.tar.xz"
 tar xf "clang+llvm-${LLVM_VERSION}-x86_64-apple-darwin.tar.xz"
-pushd "clang+llvm-${LLVM_VERSION}-final-x86_64-apple-darwin"
-tar czf "$LLVM_PANTS_ARCHIVE_NAME" \
-    bin/clang \
-    bin/clang++ \
-    "bin/clang-${CORRESPONDING_CLANG_BIN_VERSION}"
+llvm_macos_bin_release_dir_abs="$(pwd)/clang+llvm-${LLVM_VERSION}-final-x86_64-apple-darwin"
+
+mkdir -p "$LLVM_TMP_MACOS_PKG_DIR"
+pushd "$LLVM_TMP_MACOS_PKG_DIR"
+
+extract-required-files-from-unpacked-llvm \
+  "$llvm_macos_bin_release_dir_abs" \
+  "$LLVM_PANTS_ARCHIVE_NAME"
+
 llvm_macos_packaged_abs="$(pwd)/${LLVM_PANTS_ARCHIVE_NAME}"
 popd
 
@@ -59,7 +88,7 @@ done
 CMAKE_VERSION='3.9.5'
 CMAKE_BUILD_TMP_DIR='cmake-build-tmp'
 LLVM_BUILD_TMP_DIR='llvm-build'
-LLVM_TMP_PKG_DIR='llvm-pkg'
+LLVM_TMP_LINUX_PKG_DIR='llvm-linux-pkg'
 
 "./build-cmake-${CMAKE_VERSION}.sh"
 cmake_linux_packaged_abs="$(pwd)/build-support/bin/cmake/linux/x86_64/${CMAKE_VERSION}/cmake.tar.gz"
@@ -91,20 +120,16 @@ pushd "$LLVM_BUILD_TMP_DIR"
 
 make -j"$MAKE_JOBS"
 
-llvm_built_dir_abs="$(pwd)"
+llvm_linux_source_release_dir_abs="$(pwd)"
 
 popd
 
-mkdir -p "$LLVM_TMP_PKG_DIR"
-pushd "$LLVM_TMP_PKG_DIR"
+mkdir -p "$LLVM_TMP_LINUX_PKG_DIR"
+pushd "$LLVM_TMP_LINUX_PKG_DIR"
 
-mkdir -p include/
-cp "$llvm_built_dir_abs"/lib/clang/"${LLVM_VERSION}"/include/*.h include/
-
-mkdir -p bin/
-cp "$llvm_built_dir_abs"/bin/{clang,clang++,clang-"${CORRESPONDING_CLANG_BIN_VERSION}"} bin/
-
-tar cvzf "$LLVM_PANTS_ARCHIVE_NAME" bin include
+extract-required-files-from-unpacked-llvm \
+  "$llvm_linux_source_release_dir_abs" \
+  "$LLVM_PANTS_ARCHIVE_NAME"
 
 llvm_linux_packaged_abs="$(pwd)/${LLVM_PANTS_ARCHIVE_NAME}"
 
