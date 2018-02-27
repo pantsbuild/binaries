@@ -40,7 +40,7 @@ function extract-required-files-from-unpacked-llvm {
   find "$unpacked_llvm_dir"/lib/clang/"$LLVM_VERSION"/include \
        -type f \
        -name '*.h' \
-       -exec cp '{}' include/ '+'
+       -exec cp '{}' include/ ';'
 
   tar czf "$pants_output_archive_name" bin/ include/
 }
