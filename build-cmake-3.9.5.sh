@@ -20,6 +20,6 @@ for rev in "10.8" "10.9" "10.10" "10.11" "10.12" "10.13"; do
   DEST_BASE="build-support/bin/cmake/mac/${rev}"
   mkdir -p "${DEST_BASE}"
   pushd "${DEST_BASE}" > /dev/null
-    ln -s "../10.7/3.9.5" "3.9.5"
+  ln -sf "../10.7/3.9.5" "3.9.5"
   popd > /dev/null
 done
