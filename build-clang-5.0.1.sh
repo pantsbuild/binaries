@@ -13,8 +13,8 @@ set -euxo pipefail
 LLVM_VERSION='5.0.1'
 CORRESPONDING_CLANG_BIN_VERSION='5.0'
 LLVM_RELEASE_BUILD_DIRNAME='llvm-tmp'
-LLVM_PANTS_ARCHIVE_NAME='compiler.tar.gz'
-COMPILER_SUPPORTDIR='build-support/bin/compiler'
+LLVM_PANTS_ARCHIVE_NAME='clang.tar.gz'
+CLANG_SUPPORTDIR='build-support/bin/clang'
 
 # default to -j2
 MAKE_JOBS="${MAKE_JOBS:-2}"
@@ -77,7 +77,7 @@ popd
 popd
 
 for rev in ${MACOS_REVS[@]}; do
-  dest_base="${COMPILER_SUPPORTDIR}/mac/${rev}/${LLVM_VERSION}"
+  dest_base="${CLANG_SUPPORTDIR}/mac/${rev}/${LLVM_VERSION}"
   mkdir -p "$dest_base"
   cp "$llvm_macos_packaged_abs" "${dest_base}/${LLVM_PANTS_ARCHIVE_NAME}"
 done
@@ -137,5 +137,5 @@ popd
 
 popd
 
-mkdir -p "${COMPILER_SUPPORTDIR}/linux/x86_64/${LLVM_VERSION}"
-cp "$llvm_linux_packaged_abs" "${COMPILER_SUPPORTDIR}/linux/x86_64/${LLVM_VERSION}/${LLVM_PANTS_ARCHIVE_NAME}"
+mkdir -p "${CLANG_SUPPORTDIR}/linux/x86_64/${LLVM_VERSION}"
+cp "$llvm_linux_packaged_abs" "${CLANG_SUPPORTDIR}/linux/x86_64/${LLVM_VERSION}/${LLVM_PANTS_ARCHIVE_NAME}"
