@@ -16,6 +16,9 @@ LLVM_RELEASE_BUILD_DIRNAME='llvm-tmp'
 LLVM_PANTS_ARCHIVE_NAME='clang.tar.gz'
 CLANG_SUPPORTDIR='build-support/bin/clang'
 
+# default to -j2
+MAKE_JOBS="${MAKE_JOBS:-2}"
+
 mkdir -p "$LLVM_RELEASE_BUILD_DIRNAME"
 
 CLANG_BINARIES=(
@@ -34,9 +37,6 @@ function extract-required-files-from-unpacked-llvm {
     cp "${unpacked_llvm_dir}/bin/${bin_path}" bin/
   done
 
-  # Copy over the C standard library headers into the include/ subdir. We will
-  # include the C++ standard library headers in a separate subdirectory in a
-  # future commit.
   find "$unpacked_llvm_dir"/lib/clang/"$LLVM_VERSION"/include \
        -type f \
        -name '*.h' \
@@ -118,9 +118,7 @@ pushd "$LLVM_BUILD_TMP_DIR"
   -DLLVM_EXTERNAL_PROJECTS='clang' \
   "../llvm-${LLVM_VERSION}.src"
 
-# NB: There appear to be race conditions when running make with any parallelism
-# here in a Docker image.
-make
+make -j"$MAKE_JOBS"
 
 llvm_linux_source_release_dir_abs="$(pwd)"
 
