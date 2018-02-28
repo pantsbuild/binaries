@@ -16,9 +16,6 @@ LLVM_RELEASE_BUILD_DIRNAME='llvm-tmp'
 LLVM_PANTS_ARCHIVE_NAME='clang.tar.gz'
 CLANG_SUPPORTDIR='build-support/bin/clang'
 
-# default to -j2
-MAKE_JOBS="${MAKE_JOBS:-2}"
-
 mkdir -p "$LLVM_RELEASE_BUILD_DIRNAME"
 
 CLANG_BINARIES=(
@@ -118,7 +115,9 @@ pushd "$LLVM_BUILD_TMP_DIR"
   -DLLVM_EXTERNAL_PROJECTS='clang' \
   "../llvm-${LLVM_VERSION}.src"
 
-make -j"$MAKE_JOBS"
+# NB: There appear to be race conditions when running make with any parallelism
+# here in a Docker image.
+make
 
 llvm_linux_source_release_dir_abs="$(pwd)"
 
