@@ -34,6 +34,9 @@ function extract-required-files-from-unpacked-llvm {
     cp "${unpacked_llvm_dir}/bin/${bin_path}" bin/
   done
 
+  # Copy over the C standard library headers into the include/ subdir. We will
+  # include the C++ standard library headers in a separate subdirectory in a
+  # future commit.
   find "$unpacked_llvm_dir"/lib/clang/"$LLVM_VERSION"/include \
        -type f \
        -name '*.h' \
