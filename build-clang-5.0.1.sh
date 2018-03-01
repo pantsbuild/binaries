@@ -20,9 +20,7 @@ mkdir -p "$LLVM_RELEASE_BUILD_DIRNAME"
 
 function extract-required-files-from-unpacked-llvm {
   local -r unpacked_llvm_dir_abs="$1"
-  local -r c_stdlib_header_dir_abs="$2"
-  local -r cpp_stdlib_header_dir_abs="$3"
-  local -r pants_output_archive_name="$4"
+  local -r pants_output_archive_name="$2"
 
   mkdir -p bin/ include/
 
@@ -41,9 +39,6 @@ function extract-required-files-from-unpacked-llvm {
   ln -sf clang-cpp cpp
 
   popd
-
-  cp -r "$c_stdlib_header_dir_abs" include/c
-  cp -r "$cpp_stdlib_header_dir_abs" include/c++
 
   tar czf "$pants_output_archive_name" bin/ include/
 }
@@ -67,19 +62,11 @@ curl -L -O "https://releases.llvm.org/${LLVM_VERSION}/clang+llvm-${LLVM_VERSION}
 tar xf "clang+llvm-${LLVM_VERSION}-x86_64-apple-darwin.tar.xz"
 llvm_macos_bin_release_dir_abs="$(pwd)/clang+llvm-${LLVM_VERSION}-final-x86_64-apple-darwin"
 
-# Get C and C++ standard library headers from the MacOS binary release (they're
-# not available in the Linux source release). These files are not
-# platform-specific.
-c_header_dir_abs="${llvm_macos_bin_release_dir_abs}/lib/clang/${LLVM_VERSION}/include"
-cpp_header_dir_abs="${llvm_macos_bin_release_dir_abs}/include/c++/v1"
-
 mkdir -p "$LLVM_TMP_MACOS_PKG_DIR"
 pushd "$LLVM_TMP_MACOS_PKG_DIR"
 
 extract-required-files-from-unpacked-llvm \
   "$llvm_macos_bin_release_dir_abs" \
-  "$c_header_dir_abs" \
-  "$cpp_header_dir_abs" \
   "$LLVM_PANTS_ARCHIVE_NAME"
 
 llvm_macos_packaged_abs="$(pwd)/${LLVM_PANTS_ARCHIVE_NAME}"
@@ -123,6 +110,10 @@ tar xf "cfe-${LLVM_VERSION}.src.tar.xz"
 mkdir -p "$LLVM_BUILD_TMP_DIR"
 pushd "$LLVM_BUILD_TMP_DIR"
 
+# This didn't immediately compile right off the bat -- I'd recommend to anyone
+# watching that Homebrew formulas are good places to learn about how to provide
+# high-quality toolchains on OSX. I found https://llvm.org/docs/CMake.html
+# "helpful" for this line as well.
 "$cmake_linux_bin_abs" \
   -DCMAKE_BUILD_TYPE=Release \
   -DLLVM_EXTERNAL_CLANG_SOURCE_DIR="../cfe-${LLVM_VERSION}.src" \
@@ -142,8 +133,6 @@ pushd "$LLVM_TMP_LINUX_PKG_DIR"
 
 extract-required-files-from-unpacked-llvm \
   "$llvm_linux_source_release_dir_abs" \
-  "$c_header_dir_abs" \
-  "$cpp_header_dir_abs" \
   "$LLVM_PANTS_ARCHIVE_NAME"
 
 llvm_linux_packaged_abs="$(pwd)/${LLVM_PANTS_ARCHIVE_NAME}"

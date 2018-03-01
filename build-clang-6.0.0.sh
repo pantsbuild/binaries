@@ -123,6 +123,10 @@ tar xf "cfe-${LLVM_VERSION}.src.tar.xz"
 mkdir -p "$LLVM_BUILD_TMP_DIR"
 pushd "$LLVM_BUILD_TMP_DIR"
 
+# This didn't immediately compile right off the bat -- I'd recommend to anyone
+# watching that Homebrew formulas are good places to learn about how to provide
+# high-quality toolchains on OSX. I found https://llvm.org/docs/CMake.html
+# "helpful" for this line as well.
 "$cmake_linux_bin_abs" \
   -DCMAKE_BUILD_TYPE=Release \
   -DLLVM_EXTERNAL_CLANG_SOURCE_DIR="../cfe-${LLVM_VERSION}.src" \
