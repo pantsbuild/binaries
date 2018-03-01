@@ -18,29 +18,32 @@ CLANG_SUPPORTDIR='build-support/bin/clang'
 
 mkdir -p "$LLVM_RELEASE_BUILD_DIRNAME"
 
-CLANG_BINARIES=(
-  clang
-  clang++
-  clang-"${CORRESPONDING_CLANG_BIN_VERSION}"
-)
-
 function extract-required-files-from-unpacked-llvm {
-  local -r unpacked_llvm_dir="$1"
-  local -r pants_output_archive_name="$2"
+  local -r unpacked_llvm_dir_abs="$1"
+  local -r c_stdlib_header_dir_abs="$2"
+  local -r cpp_stdlib_header_dir_abs="$3"
+  local -r pants_output_archive_name="$4"
 
-  mkdir -p bin/ include/
+  mkdir bin/ include/
 
-  for bin_path in ${CLANG_BINARIES[@]}; do
-    cp "${unpacked_llvm_dir}/bin/${bin_path}" bin/
-  done
+  pushd bin/
 
-  # Copy over the C standard library headers into the include/ subdir. We will
-  # include the C++ standard library headers in a separate subdirectory in a
-  # future commit.
-  find "$unpacked_llvm_dir"/lib/clang/"$LLVM_VERSION"/include \
-       -type f \
-       -name '*.h' \
-       -exec cp '{}' include/ ';'
+  cp "${unpacked_llvm_dir_abs}/bin/clang-${CORRESPONDING_CLANG_BIN_VERSION}" \
+     "./clang-${CORRESPONDING_CLANG_BIN_VERSION}"
+
+  cp "${unpacked_llvm_dir_abs}/bin/clang" ./clang
+  ln -s clang cc
+
+  cp "${unpacked_llvm_dir_abs}/bin/clang++" ./clang++
+  ln -s clang++ c++
+
+  cp "${unpacked_llvm_dir_abs}/bin/clang-cpp" ./clang-cpp
+  ln -s clang-cpp cpp
+
+  popd
+
+  cp -r "$c_stdlib_header_dir_abs" include/c
+  cp -r "$cpp_stdlib_header_dir_abs" include/c++
 
   tar czf "$pants_output_archive_name" bin/ include/
 }
@@ -64,11 +67,19 @@ curl -L -O "https://releases.llvm.org/${LLVM_VERSION}/clang+llvm-${LLVM_VERSION}
 tar xf "clang+llvm-${LLVM_VERSION}-x86_64-apple-darwin.tar.xz"
 llvm_macos_bin_release_dir_abs="$(pwd)/clang+llvm-${LLVM_VERSION}-final-x86_64-apple-darwin"
 
+# Get C and C++ standard library headers from the MacOS binary release (they're
+# not available in the Linux source release). These files are not
+# platform-specific.
+c_header_dir_abs="${llvm_macos_bin_release_dir_abs}/lib/clang/${LLVM_VERSION}/include"
+cpp_header_dir_abs="${llvm_macos_bin_release_dir_abs}/include/c++/v1"
+
 mkdir -p "$LLVM_TMP_MACOS_PKG_DIR"
 pushd "$LLVM_TMP_MACOS_PKG_DIR"
 
 extract-required-files-from-unpacked-llvm \
   "$llvm_macos_bin_release_dir_abs" \
+  "$c_header_dir_abs" \
+  "$cpp_header_dir_abs" \
   "$LLVM_PANTS_ARCHIVE_NAME"
 
 llvm_macos_packaged_abs="$(pwd)/${LLVM_PANTS_ARCHIVE_NAME}"
@@ -131,6 +142,8 @@ pushd "$LLVM_TMP_LINUX_PKG_DIR"
 
 extract-required-files-from-unpacked-llvm \
   "$llvm_linux_source_release_dir_abs" \
+  "$c_header_dir_abs" \
+  "$cpp_header_dir_abs" \
   "$LLVM_PANTS_ARCHIVE_NAME"
 
 llvm_linux_packaged_abs="$(pwd)/${LLVM_PANTS_ARCHIVE_NAME}"
