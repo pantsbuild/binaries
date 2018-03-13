@@ -10,8 +10,8 @@ fi
 
 set -euxo pipefail
 
-LLVM_VERSION='5.0.1'
-CORRESPONDING_CLANG_BIN_VERSION='5.0'
+LLVM_VERSION='6.0.0'
+CORRESPONDING_CLANG_BIN_VERSION='6.0'
 LLVM_RELEASE_BUILD_DIRNAME='llvm-tmp'
 LLVM_PANTS_ARCHIVE_NAME='clang.tar.gz'
 CLANG_SUPPORTDIR='build-support/bin/clang'
@@ -65,7 +65,7 @@ pushd "$LLVM_RELEASE_BUILD_DIRNAME"
 
 curl -L -O "https://releases.llvm.org/${LLVM_VERSION}/clang+llvm-${LLVM_VERSION}-x86_64-apple-darwin.tar.xz"
 tar xf "clang+llvm-${LLVM_VERSION}-x86_64-apple-darwin.tar.xz"
-llvm_macos_bin_release_dir_abs="$(pwd)/clang+llvm-${LLVM_VERSION}-final-x86_64-apple-darwin"
+llvm_macos_bin_release_dir_abs="$(pwd)/clang+llvm-${LLVM_VERSION}-x86_64-apple-darwin"
 
 # Get C and C++ standard library headers from the MacOS binary release (they're
 # not available in the Linux source release). These files are not

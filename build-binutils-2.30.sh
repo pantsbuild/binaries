@@ -13,9 +13,9 @@ fi
 
 set -euxo pipefail
 
-LINKER_SUPPORTDIR='build-support/bin/linker'
-LINKER_PANTS_ARCHIVE_NAME='linker.tar.gz'
-LINKER_BUILD_TMP_DIR='linker-tmp'
+BINUTILS_SUPPORTDIR='build-support/bin/binutils'
+BINUTILS_PANTS_ARCHIVE_NAME='binutils.tar.gz'
+BINUTILS_BUILD_TMP_DIR='binutils-tmp'
 
 # default to -j2
 MAKE_JOBS="${MAKE_JOBS:-2}"
@@ -24,8 +24,8 @@ MAKE_JOBS="${MAKE_JOBS:-2}"
 BINUTILS_VERSION='2.30'
 BINUTILS_TMP_ARCHIVE_CREATION_DIR='binutils-tmp'
 
-mkdir -p "$LINKER_BUILD_TMP_DIR"
-pushd "$LINKER_BUILD_TMP_DIR"
+mkdir -p "$BINUTILS_BUILD_TMP_DIR"
+pushd "$BINUTILS_BUILD_TMP_DIR"
 
 curl -L -O "https://ftpmirror.gnu.org/binutils/binutils-${BINUTILS_VERSION}.tar.xz"
 tar xf "binutils-${BINUTILS_VERSION}.tar.xz"
@@ -42,12 +42,13 @@ pushd "$BINUTILS_TMP_ARCHIVE_CREATION_DIR"
 
 mkdir bin
 cp "../binutils-${BINUTILS_VERSION}/ld/ld-new" bin/ld
-tar cvzf "$LINKER_PANTS_ARCHIVE_NAME" bin/ld
-local linker_tools_linux_packaged_abs="$(pwd)/${LINKER_PANTS_ARCHIVE_NAME}"
+tar cvzf "$BINUTILS_PANTS_ARCHIVE_NAME" bin/ld
+binutils_linux_packaged_abs="$(pwd)/${BINUTILS_PANTS_ARCHIVE_NAME}"
 
 popd
 
 popd
 
-mkdir -p "${LINKER_SUPPORTDIR}/linux/x86_64/${LINKER_VERSION}"
-cp "$linker_tools_linux_packaged_abs" "${LINKER_SUPPORTDIR}/linux/x86_64/${LINKER_VERSION}/${LINKER_PANTS_ARCHIVE_NAME}"
+mkdir -p "${BINUTILS_SUPPORTDIR}/linux/x86_64/${BINUTILS_VERSION}"
+cp "$binutils_linux_packaged_abs" \
+   "${BINUTILS_SUPPORTDIR}/linux/x86_64/${BINUTILS_VERSION}/${BINUTILS_PANTS_ARCHIVE_NAME}"
