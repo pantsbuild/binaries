@@ -8,16 +8,21 @@ workflow
 
 The general workflow for publishing new binaries is:
 
-1. Create a script that will build the binary tool for both Linux and OSX (as reproducibly as
-   possible).
-2. Get the script reviewed. During review, the reviewer should confirm that the script
-   successfully produces binaries on their machine(s).
-3. The script should then be merged _without_ the produced binaries.
-4. After merging, the reviewer should (re-)execute the script (if necessary), and then run:
+1. Create a script that will build the binary tool as reproducibly as possible, and place
+   it in a relevant directory under `build-support`. For example, for `thrift` `0.10.0` for `osx`,
+   you'd create the script at `build-support/bin/thrift/mac/10.13/0.10.0/build.sh`.
+2. Symlink the script directory into all other relevant versions for both platforms. For OSX, this
+   will generally include "all modern OSX versions": ie,
+   `build-support/bin/thrift/mac/{10.13,10.12,10.11,10.10,etc}`.
+3. Get the script and links reviewed. During review, the reviewer should confirm that the script
+   successfully produces a binary on their machine(s).
+4. The script should then be merged _without_ the produced binaries.
+5. After merging, the reviewer should (re-)execute the script (if necessary), confirm that binaries
+   have been created in all relevant symlinked directories, and then run:
      ```
      ./sync-s3.sh
      ```
-  ...to sync the produced binaries to s3.
+  ...to upload the produced binaries to s3.
 
 building
 ========
