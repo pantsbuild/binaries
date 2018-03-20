@@ -50,7 +50,7 @@ popd
 
 pushd "$GCC_INSTALL_DIR"
 
-tar cvzf "$GCC_PKG_TARBALL" *
+tar cvzf "$GCC_PKG_TARBALL" bin include lib lib64 libexec
 gcc_packaged_abs="$(get_absolute_path "$GCC_PKG_TARBALL")"
 
 popd
