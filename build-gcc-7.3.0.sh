@@ -53,10 +53,6 @@ build_support_directories_for_current_platform=()
 
 _host_uname="$(uname)"
 
-function rdr {
-  "$@" >&2
-}
-
 function die {
   echo >&2 "$@"
   exit 1
@@ -120,7 +116,7 @@ function absolutely {
 # Make a new directory and get its absolute path in one fell swoop.
 function new_dir_abs_path {
   local -r dir_relpath="$1"
-  mkdir >&2 -pv "$dir_relpath"
+  mkdir -p "$dir_relpath"
   absolutely "$dir_relpath"
 }
 
@@ -136,7 +132,7 @@ pushd "$tmp_root_dir_abs"       # root -> $tmp_root_dir_abs
 # location, and one of the gpg keys mentioned on
 # https://gcc.gnu.org/mirrors.html can be used to perform the verification.
 curl -L -v -O "$GCC_RELEASE_URL"
-tar zxvf "$GCC_RELEASE_ARCHIVE_FILE"
+tar zxf "$GCC_RELEASE_ARCHIVE_FILE"
 # This is the directory created by extracting the release tarball.
 src_dir_abs="$(absolutely "$GCC_SRC_DIRNAME")"
 
@@ -164,7 +160,7 @@ popd                            # $tmp_root_dir_abs <- $build_dir_abs
 pushd "$install_dir_abs"        # $tmp_root_dir_abs -> $install_dir_abs
 
 # Extract what we need into gcc.tar.gz.
-tar cvzf "$GCC_PKG_TARBALL" bin include lib lib64 libexec
+tar czf "$GCC_PKG_TARBALL" bin include lib lib64 libexec
 # This is an absolute path to the packaged archive we want to provide.
 gcc_packaged_abs="$(absolutely "$GCC_PKG_TARBALL" -f)"
 
