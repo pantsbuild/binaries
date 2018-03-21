@@ -16,6 +16,11 @@ set -euxo pipefail
 BINUTILS_SUPPORTDIR='build-support/bin/binutils'
 BINUTILS_PANTS_ARCHIVE_NAME='binutils.tar.gz'
 BINUTILS_BUILD_TMP_DIR='binutils-tmp'
+BINUTILS_INSTALL_DIRNAME='binutils-install'
+
+BINUTILS_SRC_DIRNAME="binutils-${BINUTILS_VERSION}"
+BINUTILS_RELEASE_ARCHIVE_NAME="binutils-${BINUTILS_VERSION}.tar.xz"
+BINUTILS_RELEASE_URL="https://ftpmirror.gnu.org/binutils/${BINUTILS_RELEASE_ARCHIVE_NAME}"
 
 # default to -j2
 MAKE_JOBS="${MAKE_JOBS:-2}"
@@ -25,30 +30,37 @@ BINUTILS_VERSION='2.30'
 BINUTILS_TMP_ARCHIVE_CREATION_DIR='binutils-tmp'
 
 mkdir -p "$BINUTILS_BUILD_TMP_DIR"
-pushd "$BINUTILS_BUILD_TMP_DIR"
+pushd "$BINUTILS_BUILD_TMP_DIR" # root -> $BINUTILS_BUILD_TMP_DIR
 
-curl -L -O "https://ftpmirror.gnu.org/binutils/binutils-${BINUTILS_VERSION}.tar.xz"
-tar xf "binutils-${BINUTILS_VERSION}.tar.xz"
-pushd "binutils-${BINUTILS_VERSION}"
+curl -L -v -O "$BINUTILS_RELEASE_URL"
+tar xf "$BINUTILS_RELEASE_ARCHIVE_NAME"
 
-./configure
+mkdir -p "$BINUTILS_INSTALL_DIRNAME"
+binutils_install_dir_abs="$(pwd)/${BINUTILS_INSTALL_DIRNAME}"
+
+pushd "$BINUTILS_SRC_DIRNAME"   # $BINUTILS_BUILD_TMP_DIR -> $BINUTILS_SRC_DIRNAME
+
+./configure \
+  "--prefix=${binutils_install_dir_abs}"
+
 make -j"$MAKE_JOBS"
 
-popd
+make install
 
-rm -rf "$BINUTILS_TMP_ARCHIVE_CREATION_DIR"
-mkdir "$BINUTILS_TMP_ARCHIVE_CREATION_DIR"
-pushd "$BINUTILS_TMP_ARCHIVE_CREATION_DIR"
+popd                            # $BINUTILS_BUILD_TMP_DIR <- $BINUTILS_SRC_DIRNAME
 
-mkdir bin
-cp "../binutils-${BINUTILS_VERSION}/ld/ld-new" bin/ld
-tar cvzf "$BINUTILS_PANTS_ARCHIVE_NAME" bin/ld
+pushd "$BINUTILS_INSTALL_DIRNAME" # $BINUTILS_BUILD_TMP_DIR -> $BINUTILS_INSTALL_DIRNAME
+
+tar cvzf "$BINUTILS_PANTS_ARCHIVE_NAME" *
 binutils_linux_packaged_abs="$(pwd)/${BINUTILS_PANTS_ARCHIVE_NAME}"
 
-popd
+popd                            # $BINUTILS_BUILD_TMP_DIR <- $BINUTILS_INSTALL_DIRNAME
 
-popd
+popd                            # root <- $BINUTILS_BUILD_TMP_DIR
 
+# We only provide binutils on Linux (there is no open source OSX linker right
+# now), and we are choosing not to support 32-bit hosts unless there is a clear
+# need, so we only need to fill up one directory here.
 mkdir -p "${BINUTILS_SUPPORTDIR}/linux/x86_64/${BINUTILS_VERSION}"
 cp "$binutils_linux_packaged_abs" \
    "${BINUTILS_SUPPORTDIR}/linux/x86_64/${BINUTILS_VERSION}/${BINUTILS_PANTS_ARCHIVE_NAME}"

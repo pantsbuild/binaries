@@ -136,6 +136,13 @@ tar zxf "$GCC_RELEASE_ARCHIVE_FILE"
 # This is the directory created by extracting the release tarball.
 src_dir_abs="$(absolutely "$GCC_SRC_DIRNAME")"
 
+# In the bad old days you had to find the right versions of mpfr, mpc, and gmp
+# (they're multiple/arbitrary precision numeric libraries) just to compile gcc.
+# This is pretty nice.
+pushd "$src_dir_abs"            # $tmp_root_dir_abs -> $src_dir_abs
+./contrib/download_prerequisites
+popd                            # $tmp_root_dir_abs <- $src_dir_abs
+
 # These are two new directories we just made -- gcc doesn't like "in-tree"
 # builds, so we make a new directory to run make in, and then install it into
 # our other new directory right beside.
