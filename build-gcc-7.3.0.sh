@@ -53,6 +53,10 @@ build_support_directories_for_current_platform=()
 
 _host_uname="$(uname)"
 
+function rdr {
+  "$@" >&2
+}
+
 function die {
   echo >&2 "$@"
   exit 1
@@ -66,6 +70,10 @@ case "$_host_uname" in
     # https://gcc.gnu.org/bugzilla/show_bug.cgi?id=81797
     # enough to blindly use the Homebrew patch.
     MAKE_JOBS=1
+
+    unset LD
+    unset LDSHARED
+    PATH='/usr/bin:/bin'
 
     _osx_uname_release="$(uname -r)"
     configure_args_for_current_platform+=(
@@ -99,20 +107,20 @@ esac
 # Check if a directory exists, and error out or return its absolute
 # path. Passing -f allows testing a file as well.
 function absolutely {
-  local -r path_arg="$1"
-  local -r test_flag="${2:--d}" # default to checking if dir
+  local -r path_arg="$1" test_flag="${2:--d}" # default to checking if dir
 
   if ! test "$test_flag" "$path_arg"; then
     die "'${path_arg}' did not pass the '${test_flag}' test. Exiting."
   fi
 
-  readlink -f "$path_arg"
+  # -f is an "illegal option" for OSX readlink, so this
+  echo "$(pwd)/${path_arg}"
 }
 
 # Make a new directory and get its absolute path in one fell swoop.
 function new_dir_abs_path {
   local -r dir_relpath="$1"
-  mkdir -p "$dir_relpath"
+  mkdir >&2 -pv "$dir_relpath"
   absolutely "$dir_relpath"
 }
 
@@ -140,9 +148,8 @@ install_dir_abs="$(new_dir_abs_path "$GCC_INSTALL_DIR")"
 
 pushd "$build_dir_abs"          # $tmp_root_dir_abs -> $build_dir_abs
 
+# The --prefix argument determines where the products of `make install` go.
 "${src_dir_abs}/configure" \
-  # The --prefix argument determines where the products of `make install` will
-  # lie.
   "--prefix=${install_dir_abs}" \
   "${configure_args_for_current_platform[@]}"
 
