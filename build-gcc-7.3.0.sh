@@ -22,15 +22,16 @@ function configure_args {
 
   cat <<EOF
 --prefix=${pfx_dir_abs}
---enable-languages=${GCC_SUPPORTED_LANGS}
---enable-checking=release
---with-pkgversion=Pants-packaged GCC (${GCC_VERSION})
---with-bugurl=https://github.com/pantsbuild/pants/issues
+--disable-multilib
+--enable-languages="${GCC_SUPPORTED_LANGS}"
+--enable-checking='release'
+--with-pkgversion="Pants-packaged GCC (${GCC_VERSION})"
+--with-bugurl='https://github.com/pantsbuild/pants/issues'
 EOF
 
   if [[ "$(uname)" = 'Darwin' ]]; then
     cat <<EOF
---build=x86_64-apple-darwin$(uname -r)
+--build="x86_64-apple-darwin$(uname -r)"
 --with-system-zlib
 EOF
   fi
@@ -64,7 +65,7 @@ unset LD
 configure_script_path="../gcc-${GCC_VERSION}/configure"
 
 configure_args "$install_dir_abs" \
-  | xargs "$configure_script_path" -t
+  | xargs -t "$configure_script_path"
 
 make "-j${MAKE_JOBS}"
 
