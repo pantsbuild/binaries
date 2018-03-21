@@ -167,7 +167,7 @@ popd                            # $tmp_root_dir_abs <- $build_dir_abs
 pushd "$install_dir_abs"        # $tmp_root_dir_abs -> $install_dir_abs
 
 # Extract what we need into gcc.tar.gz.
-tar czf "$GCC_PKG_TARBALL" bin include lib lib64 libexec
+tar czf "$GCC_PKG_TARBALL" */
 # This is an absolute path to the packaged archive we want to provide.
 gcc_packaged_abs="$(absolutely "$GCC_PKG_TARBALL" -f)"
 
