@@ -11,8 +11,29 @@ GCC_INSTALL_DIR='gcc-install'
 GCC_PKG_TARBALL='gcc.tar.gz'
 GCC_SUPPORTDIR='build-support/bin/gcc/'
 
+GCC_SUPPORTED_LANGS='c,c++,objc,obj-c++,fortran'
+
 function get_absolute_path {
   readlink -f "$1"
+}
+
+function configure_args {
+  local -r pfx_dir_abs="$1"
+
+  cat <<EOF
+--prefix=${pfx_dir_abs}
+--enable-languages=${GCC_SUPPORTED_LANGS}
+--enable-checking=release
+--with-pkgversion=Pants-packaged GCC (${GCC_VERSION})
+--with-bugurl=https://github.com/pantsbuild/pants/issues
+EOF
+
+  if [[ "$(uname)" = 'Darwin' ]]; then
+    cat <<EOF
+--build=x86_64-apple-darwin$(uname -r)
+--with-system-zlib
+EOF
+  fi
 }
 
 mkdir -p "$GCC_TMP_DIR"
@@ -38,9 +59,12 @@ install_dir_abs="$(get_absolute_path "../${GCC_INSTALL_DIR}")"
 
 pushd "$GCC_BUILD_DIR"
 
-"../gcc-${GCC_VERSION}/configure" \
-  --disable-multilib \
-  --prefix="$install_dir_abs"
+unset LD
+
+configure_script_path="../gcc-${GCC_VERSION}/configure"
+
+configure_args "$install_dir_abs" \
+  | xargs "$configure_script_path" -t
 
 make "-j${MAKE_JOBS}"
 
