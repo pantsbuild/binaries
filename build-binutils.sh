@@ -34,7 +34,8 @@ function build_linux {
              "${source_extracted_abs}/configure" \
              --prefix="$install_dir_abs"
 
-  create_gz_package "$install_dir_abs" 'binutils' bin
+  with_pushd "$install_dir_abs" \
+             create_gz_package 'binutils' bin
 }
 
 ## Interpret arguments and execute build.
