@@ -40,8 +40,8 @@ function build_gcc_out_of_tree {
              --prefix="$install_dir_abs" \
              "${configure_args[@]}"
 
-
-  create_gz_package "$install_dir_abs" 'gcc'
+  with_pushd "$install_dir_abs" \
+             create_gz_package 'gcc'
 }
 
 function build_osx {

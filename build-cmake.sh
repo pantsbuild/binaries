@@ -26,7 +26,9 @@ function fetch_extract_cmake_binary_release {
 
 function package_cmake {
   local -r installed_dir_abs="$1"
-  create_gz_package "$installed_dir_abs" 'cmake' bin share
+
+  with_pushd "$installed_dir_abs" \
+             create_gz_package 'cmake' bin share
 }
 
 function build_osx {

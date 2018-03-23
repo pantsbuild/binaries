@@ -111,19 +111,19 @@ function extract_for {
   die "Could not locate the result of extracting '${archive_path}'."
 }
 
-# TODO: mention how you have to might have to quote your globs in args here!!
 function create_gz_package {
-  local -r installed_dir_abs="$1"
-  local -r pkg_name="$2"
-  local -a from_paths=("${@:3}")
+  local -r pkg_name="$1"
+  local -a from_paths=("${@:2}")
 
   local -r pkg_archive_name="${pkg_name}.tar.gz"
 
-  if [[ "${#from_paths[@]}" -eq 0 ]]; then
-    from_paths=('*')
-  fi
+  rm -f "$pkg_archive_name"
 
-  tar -C "$installed_dir_abs" -czf "$pkg_archive_name" "${from_paths[@]}"
+  if [[ "${#from_paths[@]}" -eq 0 ]]; then
+    tar -czf "$pkg_archive_name" *
+  else
+    tar -czf "$pkg_archive_name" "${from_paths[@]}"
+  fi
 
   get_existing_absolute_path "$pkg_archive_name"
 }

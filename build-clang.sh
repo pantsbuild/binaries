@@ -20,7 +20,8 @@ function build_osx {
   local -r downloaded_archive="$(curl_file_with_fail "$release_url" "$archive_filename")"
   local -r extracted_dir="$(extract_for "$downloaded_archive" "$normal_release_dirname" "$final_release_dirname")"
 
-  create_gz_package "$extracted_dir" 'clang'
+  with_pushd "$extracted_dir" \
+             create_gz_package 'clang'
 }
 
 
@@ -79,7 +80,8 @@ function build_linux {
   with_pushd >&2 "$build_dir_abs" \
              build_llvm_with_cmake "$cmake_exe" "$install_dir_abs" "$cfe_src_extracted_abs" "$llvm_src_extracted_abs"
 
-  create_gz_package "$install_dir_abs" 'clang'
+  with_pushd "$install_dir_abs" \
+             create_gz_package 'clang'
 }
 
 function validate_cmake {
