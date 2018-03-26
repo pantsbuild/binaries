@@ -48,6 +48,7 @@ function build_osx {
   build_gcc_out_of_tree \
     --host='x86_64-apple-darwin' \
     --target='x86_64-apple-darwin' \
+    AR="$(which ar)" \
     "${CONFIGURE_BASE_ARGS[@]}"
 }
 
