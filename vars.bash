@@ -19,15 +19,20 @@ readonly OSX_SUPPORTED_VERSIONS=(
 
 function get_create_linux_supportdirs_stdout {
   local -r pkg_name="$1" pkg_ver="$2"
+  local linux_arch_dir
   for linux_arch in "${LINUX_SUPPORTED_ARCHS[@]}"; do
-    local -r linux_arch_dir="${BUILD_SUPPORT_BINARIES_DIR}/${pkg_name}/linux/${linux_arch}/${pkg_ver}"
+    linux_arch_dir="${BUILD_SUPPORT_BINARIES_DIR}/${pkg_name}/linux/${linux_arch}/${pkg_ver}"
+    mkdir -p "$linux_arch_dir"
     echo "$linux_arch_dir"
   done
 }
 
 function get_create_osx_supportdirs_stdout {
   local -r pkg_name="$1" pkg_ver="$2"
+  local osx_ver_dir
   for osx_ver in "${OSX_SUPPORTED_VERSIONS[@]}"; do
-    echo "${BUILD_SUPPORT_BINARIES_DIR}/${pkg_name}/mac/${osx_ver}/${pkg_ver}"
+    osx_ver_dir="${BUILD_SUPPORT_BINARIES_DIR}/${pkg_name}/mac/${osx_ver}/${pkg_ver}"
+    mkdir -p "$osx_ver_dir"
+    echo "$osx_ver_dir"
   done
 }

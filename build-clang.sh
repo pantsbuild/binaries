@@ -85,7 +85,7 @@ function build_linux {
 }
 
 function validate_cmake {
-  if [[ -f "$CMAKE_EXE" ]]; then
+  if [[ ! -f "$CMAKE_EXE" ]]; then
     die_here <<EOF
 To build clang for Linux, the environment variable \$CMAKE_EXE=${CMAKE_EXE} must
 be an absolute path to a 'cmake' binary that is executable on the current host.
