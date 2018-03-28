@@ -3,6 +3,13 @@ binaries
 
 A home for scripts that build pants static binaries.
 
+
+Supported Platforms
+===================
+
+As of Spring 2018, binaries are no longer being published for i386 nor macOS versions prior to 10.8.
+Binaries for Linux x86_64 and macOS 10.8+ are generally published.
+
 workflow
 ========
 
