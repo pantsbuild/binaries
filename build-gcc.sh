@@ -28,6 +28,8 @@ function build_gcc_out_of_tree {
 
   local -r source_extracted_abs="$(fetch_extract_gcc_source_release)"
 
+  # This script is a great tool, it saves a ton of time downloading and
+  # configuring gmp, mpc, isl, and mpfr per-platform.
   with_pushd >&2 "$source_extracted_abs" \
                  ./contrib/download_prerequisites
 
@@ -45,10 +47,11 @@ function build_gcc_out_of_tree {
 }
 
 function build_osx {
+  local -r release_numeric="$1"
+  local -r target_desc="x86_64-apple-darwin${release_numeric}"
   build_gcc_out_of_tree \
-    --host='x86_64-apple-darwin' \
-    --target='x86_64-apple-darwin' \
-    AR="$(which ar)" \
+    --host="$target_desc" \
+    --target="$target_desc" \
     "${CONFIGURE_BASE_ARGS[@]}"
 }
 
@@ -61,24 +64,41 @@ function build_linux {
 
 readonly TARGET_PLATFORM="$1" GCC_VERSION="$2"
 
-readonly MAKE_JOBS="${MAKE_JOBS:-2}"
-
-readonly SUPPORTED_LANGS='c,c++,objc,obj-c++,fortran'
+readonly SUPPORTED_LANGS='c,c++'
 
 readonly -a CONFIGURE_BASE_ARGS=(
   --disable-multilib
+  --without-gstabs
   --enable-languages="${SUPPORTED_LANGS}"
-  --enable-checking='release'
   --with-pkgversion="Pants-packaged GCC (${GCC_VERSION})"
   --with-bugurl='https://github.com/pantsbuild/pants/issues'
 )
 
 case "$TARGET_PLATFORM" in
   osx)
+    if [[ "$(uname)" != 'Darwin' ]]; then
+      die "This script only supports building gcc for OSX within an OSX environment."
+    fi
+    # Since we can't do this in a VM, ensure we're only using the tools provided
+    # by Apple -- accidentally using e.g. homebrew tools instead will cause
+    # weird errors.
+    export PATH='/bin:/usr/bin'
+    # There are race conditions with parallel make, or at least, I have found
+    # weird errors occur whenever I try to use make with parallelism. This might
+    # be worth investigating at some point. This may be related to this comment
+    # on the homebrew formula for gcc 7.3.0: https://github.com/Homebrew/homebrew-core/blob/a58c7b32c9ab679bc5f1afecc45f315710676ba1/Formula/gcc.rb#L56
+    readonly MAKE_JOBS=1
+    # I haven't been able to get this to build without appending $(uname -r) to
+    # the --host and --target specs -- this is again what is done in homebrew. I
+    # don't know if this will cause subtle or non-subtle incompatibilities with
+    # earlier versions of OSX. Tested on High Sierra, where
+    # $(uname -r)=='17.4.0'
     with_pushd "$(mkdirp_absolute_path "gcc-${GCC_VERSION}-osx")" \
-               build_osx
+               build_osx "$(uname -r)"
     ;;
   linux)
+    # Default to 2 parallel jobs if unspecified.
+    readonly MAKE_JOBS="${MAKE_JOBS:-2}"
     with_pushd "$(mkdirp_absolute_path "gcc-${GCC_VERSION}-linux")" \
                build_linux
     ;;
