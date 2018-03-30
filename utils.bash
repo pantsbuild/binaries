@@ -14,7 +14,7 @@ function warn {
 
 # Display a message to stderr, then exit with failure.
 function die {
-  echo >&2 "$@"
+  warn "$@"
   exit 1
 }
 
@@ -51,11 +51,6 @@ function get_existing_absolute_path {
   fi
 
   echo "$abs_path"
-}
-
-function var_is_set {
-  local -r var_name="$1"
-  [[ "${!var_name+x}" != '' ]]
 }
 
 # Download a file from a given URL, with verbose output, and exiting with
@@ -126,15 +121,6 @@ function create_gz_package {
   fi
 
   get_existing_absolute_path "$pkg_archive_name"
-}
-
-function deploy_package_to_dirs_from_stdin {
-  local -r pkg_archive_path="$1"
-  local -r pkg_output_archive_filename="$(basename "$pkg_archive_path")"
-
-  while read dir; do
-    cp >&2 -v "$pkg_archive_path" "${dir}/${pkg_output_archive_filename}"
-  done
 }
 
 function with_pushd {
