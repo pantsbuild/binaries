@@ -28,6 +28,8 @@ function build_gcc_out_of_tree {
 
   local -r source_extracted_abs="$(fetch_extract_gcc_source_release)"
 
+  check_cmd_or_err 'wget'
+
   # This script is a great tool, it saves a ton of time downloading and
   # configuring gmp, mpc, isl, and mpfr per-platform.
   with_pushd >&2 "$source_extracted_abs" \
@@ -70,7 +72,7 @@ readonly -a CONFIGURE_BASE_ARGS=(
   --disable-multilib
   --without-gstabs
   --enable-languages="${SUPPORTED_LANGS}"
-  --with-pkgversion="Pants-packaged GCC (${GCC_VERSION})"
+  --with-pkgversion="pants-packaged"
   --with-bugurl='https://github.com/pantsbuild/pants/issues'
 )
 
@@ -79,10 +81,10 @@ case "$TARGET_PLATFORM" in
     if [[ "$(uname)" != 'Darwin' ]]; then
       die "This script only supports building gcc for OSX within an OSX environment."
     fi
-    # Since we can't do this in a VM, ensure we're only using the tools provided
-    # by Apple -- accidentally using e.g. homebrew tools instead will cause
-    # weird errors.
-    export PATH='/bin:/usr/bin'
+    # Since we can't do this in a VM, ensure we're (probably) using the tools
+    # provided by Apple -- accidentally using e.g. homebrew tools instead will
+    # cause weird errors.
+    export PATH="/bin:/usr/bin:${PATH}"
     # There are race conditions with parallel make, or at least, I have found
     # weird errors occur whenever I try to use make with parallelism. This might
     # be worth investigating at some point. This may be related to this comment
