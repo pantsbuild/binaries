@@ -28,10 +28,10 @@ function build_gcc_out_of_tree {
 
   local -r source_extracted_abs="$(fetch_extract_gcc_source_release)"
 
-  check_cmd_or_err 'wget'
-
   # This script is a great tool, it saves a ton of time downloading and
   # configuring gmp, mpc, isl, and mpfr per-platform.
+  check_cmd_or_err 'wget'
+  # Redirect to stderr because we "return" a path to our .tar.gz by stdout.
   with_pushd >&2 "$source_extracted_abs" \
                  ./contrib/download_prerequisites
 

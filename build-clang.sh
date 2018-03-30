@@ -4,6 +4,13 @@ source ./utils.bash
 
 set_strict_mode
 
+function package_clang {
+  local -r installed_dir_abs="$1"
+
+  with_pushd "$installed_dir_abs" \
+             create_gz_package 'clang'
+}
+
 ## Build for OSX from LLVM's binary release package.
 
 function build_osx {
@@ -20,8 +27,7 @@ function build_osx {
   local -r downloaded_archive="$(curl_file_with_fail "$release_url" "$archive_filename")"
   local -r extracted_dir="$(extract_for "$downloaded_archive" "$normal_release_dirname" "$final_release_dirname")"
 
-  with_pushd "$extracted_dir" \
-             create_gz_package 'clang'
+  package_clang "$extracted_dir"
 }
 
 
@@ -77,11 +83,11 @@ function build_linux {
   local -r llvm_src_extracted_abs="$(fetch_extract_llvm_source_release "$llvm_src_dirname")"
   local -r cfe_src_extracted_abs="$(fetch_extract_llvm_source_release "$cfe_src_dirname")"
 
+  # Redirect to stderr because we "return" a path to our .tar.gz by stdout.
   with_pushd >&2 "$build_dir_abs" \
              build_llvm_with_cmake "$cmake_exe" "$install_dir_abs" "$cfe_src_extracted_abs" "$llvm_src_extracted_abs"
 
-  with_pushd "$install_dir_abs" \
-             create_gz_package 'clang'
+  package_clang "$install_dir_abs"
 }
 
 function validate_cmake {
@@ -96,11 +102,6 @@ EOF
 
 
 ## Interpret arguments and execute build.
-
-# $1 =
-# $2 =
-# $CMAKE_EXE =
-# $MAKE_JOBS =
 
 readonly TARGET_PLATFORM="$1" LLVM_VERSION="$2"
 
