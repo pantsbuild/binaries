@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source ./utils.bash
+source "$(git rev-parse --show-toplevel)/utils.v1.bash"
 
 set_strict_mode
 
