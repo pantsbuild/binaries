@@ -36,7 +36,7 @@ function build_yarnpkg()
 TAR_CMD="${TAR_CMD:-tar}"
 echo "Using tar command '${TAR_CMD}'"
 
-wget https://github.com/yarnpkg/yarn/releases/download/${VERSION}/yarn-${VERSION}.tar.gz
+curl -O -L https://github.com/yarnpkg/yarn/releases/download/${VERSION}/yarn-${VERSION}.tar.gz
 build_yarnpkg
 
 for arch_directory in ${ARCH_DIRECTORIES[@]}
