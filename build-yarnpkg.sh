@@ -1,12 +1,10 @@
 #!/bin/bash -exuo pipefail
 
-VERSION=${1:-"v1.2.0"}
+VERSION=${1:-"v1.6.0"}
 
 CURRENT_MAC_VERSION="10.13"
 
 ADDITIONAL_MAC_VERSIONS=(
-  10.6
-  10.7
   10.8
   10.9
   10.10
