@@ -1,6 +1,6 @@
 #!/bin/sh
 
-VERSION=${1-:"v8.11.1"}
+VERSION=${1:-"v8.11.1"}
 
 CURRENT_MAC_VERSION="10.13"
 
