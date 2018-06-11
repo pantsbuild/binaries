@@ -2,6 +2,8 @@
 
 yum -y install xz
 
-readonly result="$(./build-glibc.sh linux 2.27)"
+readonly bison_dir="$(RETURN_ARCHIVE=no ./build-bison.sh linux 3.0.5)"
 
-cp "$result" ./glibc.tar.gz
+readonly glibc_archive="$(./build-glibc.sh linux 2.27 "$bison_dir")"
+
+cp "$glibc_archive" ./glibc.tar.gz
