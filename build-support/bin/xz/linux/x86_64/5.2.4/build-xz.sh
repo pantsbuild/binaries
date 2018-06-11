@@ -22,7 +22,12 @@ function fetch_extract_xz_source_release {
 
 function build_xz {
   local -r install_dir_abs="$1"
-  ./configure --prefix="$install_dir_abs"
+
+  # --disable-rpath is necessary to make the xz package work "out of the box" -- otherwise at
+  # runtime it searches for a path in the filesystem of the VM that created it!
+  ./configure \
+    --disable-rpath \
+    --prefix="$install_dir_abs"
 
   make "-j${MAKE_JOBS}"
 
