@@ -1,5 +1,6 @@
 #!/bin/bash
 
+yum -y install m4
 yum -y install xz
 
 readonly bison_dir="$(RETURN_ARCHIVE=no ./build-bison.sh linux 3.0.5)"
