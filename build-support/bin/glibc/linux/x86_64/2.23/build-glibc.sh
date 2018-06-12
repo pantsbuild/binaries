@@ -23,18 +23,18 @@ function with_path {
 function build_glibc_with_configure {
   local -a configure_cmd_line=("$@")
 
-  # Put bison's bin directory before the rest of the PATH to use our version of bison.
-  local -r bison_bin_dir="${BISON_INSTALL_DIR}/bin"
-  local -r our_bison_first_path="${bison_bin_dir}:${PATH}"
+  "${configure_cmd_line[@]}" \
+    --disable-intl \
+    --disable-werror
 
-  with_path "$our_bison_first_path" \
-            "${configure_cmd_line[@]}"
+  # Otherwise this tries to make hard links, which we can't do in our centos6 image.
+  find . -name 'Make*' \
+       | xargs sed -rie 's#ln -f #ln -sf #g'
 
-  with_path "$our_bison_first_path" \
-            make "-j${MAKE_JOBS}"
+  # Single-threaded make because parallel seems to fail somehow?
+  make
 
-  with_path "$our_bison_first_path" \
-            make install
+  make install
 }
 
 function build_linux {
@@ -43,6 +43,11 @@ function build_linux {
   local -r build_dir_abs="$(mkdirp_absolute_path 'glibc-build')"
   local -r install_dir_abs="$(mkdirp_absolute_path 'glibc-install')"
 
+  # --disable-intl is necessary because it requires a bison version we don't have. We can build it
+  # from source, but there's no reason to do that for this package.
+  # --disable-werror is necessary, because -Werror defaults to on, but it
+  # doesn't build by default in our centos6 image for some reason
+  # (e.g. failing because of -Werror=dangling-else).
   with_pushd >&2 "$build_dir_abs" \
                  build_glibc_with_configure \
                  "${source_extracted_abs}/configure" \
@@ -54,7 +59,7 @@ function build_linux {
 
 ## Interpret arguments and execute build.
 
-readonly TARGET_PLATFORM="$1" GLIBC_VERSION="$2" BISON_INSTALL_DIR="$3"
+readonly TARGET_PLATFORM="$1" GLIBC_VERSION="$2"
 
 MAKE_JOBS="${MAKE_JOBS:-2}"
 
