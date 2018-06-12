@@ -4,11 +4,23 @@ source "$(git rev-parse --show-toplevel)/utils.v1.bash"
 
 set_strict_mode
 
+XZ_WRAPPER_SCRIPT="$(get_existing_absolute_path ./xz.py)"
+
+function wrap_xz_lib_path_then_package {
+  mv bin/xz{,-real}
+
+  cp "$XZ_WRAPPER_SCRIPT" bin/xz
+
+  chmod +x bin/xz
+
+  create_gz_package 'xz'
+}
+
 function package_xz {
   local -r installed_dir_abs="$1"
 
   with_pushd "$installed_dir_abs" \
-             create_gz_package 'xz'
+             wrap_xz_lib_path_then_package
 }
 
 function fetch_extract_xz_source_release {
