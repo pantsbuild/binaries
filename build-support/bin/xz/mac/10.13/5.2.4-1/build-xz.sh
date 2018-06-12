@@ -4,7 +4,7 @@ source "$(git rev-parse --show-toplevel)/utils.v1.bash"
 
 set_strict_mode
 
-XZ_WRAPPER_SCRIPT="$(get_existing_absolute_path ./xz.pl)"
+XZ_WRAPPER_SCRIPT="$(get_existing_absolute_path ./xz.py)"
 
 function wrap_xz_lib_path_then_package {
   mv bin/xz{,-real}
