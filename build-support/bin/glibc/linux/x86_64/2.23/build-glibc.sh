@@ -31,7 +31,8 @@ function build_glibc_with_configure {
   find . -name 'Make*' \
        | xargs sed -rie 's#ln -f #ln -sf #g'
 
-  make "-j${MAKE_JOBS}"
+  # Single-threaded make because parallel seems to fail somehow?
+  make
 
   make install
 }
