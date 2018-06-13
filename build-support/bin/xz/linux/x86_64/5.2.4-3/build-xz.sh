@@ -4,23 +4,11 @@ source "$(git rev-parse --show-toplevel)/utils.v1.bash"
 
 set_strict_mode
 
-XZ_WRAPPER_SCRIPT="$(get_existing_absolute_path ./xz.py)"
-
-function wrap_xz_lib_path_then_package {
-  mv bin/xz{,-real}
-
-  cp "$XZ_WRAPPER_SCRIPT" bin/xz
-
-  chmod +x bin/xz
-
-  create_gz_package 'xz'
-}
-
 function package_xz {
   local -r installed_dir_abs="$1"
 
   with_pushd "$installed_dir_abs" \
-             wrap_xz_lib_path_then_package
+             create_gz_package 'xz' bin
 }
 
 function fetch_extract_xz_source_release {
@@ -35,10 +23,9 @@ function fetch_extract_xz_source_release {
 function build_xz {
   local -r install_dir_abs="$1"
 
-  # --disable-rpath is necessary to make the xz package work "out of the box" -- otherwise at
-  # runtime it searches for a path in the filesystem of the VM that created it!
+  # We statically link the `xz` executable to avoid conflicts with the installed liblzma.so.
   ./configure \
-    --disable-rpath \
+    --enable-static \
     --prefix="$install_dir_abs"
 
   make "-j${MAKE_JOBS}"
@@ -53,6 +40,10 @@ function fetch_build_xz {
 
   with_pushd >&2 "$xz_src_extracted_abs" \
                  build_xz "$install_dir_abs"
+
+  local -r static_link_xz="${xz_src_extracted_abs}/src/xz/.libs/xz"
+
+  cp "$static_link_xz" "${install_dir_abs}/bin/xz"
 
   package_xz "$install_dir_abs"
 }
