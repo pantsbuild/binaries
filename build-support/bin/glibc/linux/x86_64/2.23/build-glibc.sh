@@ -23,6 +23,11 @@ function with_path {
 function build_glibc_with_configure {
   local -a configure_cmd_line=("$@")
 
+  # --disable-intl is necessary because it requires a bison version we don't have. We can build it
+  # from source, but there's no reason to do that for this package.
+  # --disable-werror is necessary, because -Werror defaults to on, but it
+  # doesn't build by default in our centos6 image for some reason
+  # (e.g. failing because of -Werror=dangling-else).
   "${configure_cmd_line[@]}" \
     --disable-intl \
     --disable-werror
@@ -31,8 +36,7 @@ function build_glibc_with_configure {
   find . -name 'Make*' \
        | xargs sed -rie 's#ln -f #ln -sf #g'
 
-  # Single-threaded make because parallel seems to fail somehow?
-  make
+  make -j"$MAKE_JOBS"
 
   make install
 }
@@ -43,11 +47,6 @@ function build_linux {
   local -r build_dir_abs="$(mkdirp_absolute_path 'glibc-build')"
   local -r install_dir_abs="$(mkdirp_absolute_path 'glibc-install')"
 
-  # --disable-intl is necessary because it requires a bison version we don't have. We can build it
-  # from source, but there's no reason to do that for this package.
-  # --disable-werror is necessary, because -Werror defaults to on, but it
-  # doesn't build by default in our centos6 image for some reason
-  # (e.g. failing because of -Werror=dangling-else).
   with_pushd >&2 "$build_dir_abs" \
                  build_glibc_with_configure \
                  "${source_extracted_abs}/configure" \
