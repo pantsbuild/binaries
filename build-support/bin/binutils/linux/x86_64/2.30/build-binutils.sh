@@ -50,6 +50,6 @@ case "$TARGET_PLATFORM" in
                build_linux
     ;;
   *)
-    die "binutils doesnot support building for '${TARGET_PLATFORM}'"
+    die "binutils does not support building for '${TARGET_PLATFORM}'"
     ;;
 esac
