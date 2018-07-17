@@ -12,7 +12,7 @@ fi
 
 version="$1"
 
-target="${ROOT}/build-support/scripts/isort/${version}/isort.pex"
+target="${ROOT}/build-support/bin/isort/${version}/isort.pex"
 
 # Two things of note:
 # 1. We force isort to be built for python2.7 since Pants will be running on 2.7.
