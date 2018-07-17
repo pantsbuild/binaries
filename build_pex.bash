@@ -24,9 +24,8 @@ function activate_venv() {
   local -r activate="${dir}/bin/activate"
   if [[ ! -f "${activate}" ]]; then
     mkdir -p "$(dirname "${dir}")"
-
     (
-    cd "$(ensure_venv_installed)"
+      cd "$(ensure_venv_installed)"
       python2.7 virtualenv.py "${dir}"
     )
   fi 
