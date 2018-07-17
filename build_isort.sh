@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 
-set -eo pipefail
+set -euo pipefail
 
 ROOT="$(git rev-parse --show-toplevel)"
-source "${ROOT}/build_pex.bash"
+source "${ROOT}/run_pex.bash"
 
 if (( $# != 1 )); then
   echo "Usage: $0 <isort version>"
