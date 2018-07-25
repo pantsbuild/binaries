@@ -17,4 +17,4 @@ ${TAR_CMD} -xzf ${tarball_name}.tar.gz -C unpack && \
 rm ${tarball_name}.tar.gz && \
 mv unpack/${tarball_name} unpack/dist && \
 ${TAR_CMD} -czf yarnpkg.tar.gz -C unpack dist/ && \
-rm -rf unpack 
+rm -rf unpack
