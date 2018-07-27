@@ -1,4 +1,4 @@
-#!/bin/bash -exuo pipefail
+#!/bin/bash -exu
 
 # Build Node.js for just this version and architecture.
 NODE_VERSION="v10.7.0"

@@ -1,4 +1,4 @@
-#!/bin/bash -exuo pipefail
+#!/bin/bash -exu
 
 YARNPKG_VERSION="v1.7.0"
 
@@ -9,7 +9,7 @@ tarball_name="yarn-${YARNPKG_VERSION}"
 TAR_CMD="${TAR_CMD:-tar}"
 echo "Using tar command '${TAR_CMD}'"
 
-wget https://github.com/yarnpkg/yarn/releases/download/${YARNPKG_VERSION}/${tarball_name}.tar.gz
+curl -L -O https://github.com/yarnpkg/yarn/releases/download/${YARNPKG_VERSION}/${tarball_name}.tar.gz
 
 # Unpack and repack according to Pants runtime expectation.
 rm -rf unpack && mkdir unpack && \
