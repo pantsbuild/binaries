@@ -63,6 +63,8 @@ sh ./configure \
   --without-perl \
   --without-php \
   --without-php_extension \
+  --without-qt4 \
+  --without-qt5 \
   --without-dart \
   --without-ruby \
   --without-haskell \
