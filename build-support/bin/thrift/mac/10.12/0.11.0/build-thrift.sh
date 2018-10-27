@@ -40,7 +40,7 @@ function build_thrift {
   local -r downloaded_archive="$(curl_file_with_fail "$release_url" "$archive_filename")"
   local -r source_extracted_abs="$(extract_for "$downloaded_archive" "$extracted_dirname")"
 
-  # NB: The configure --wthout-* flags just disable building any runtime libs
+  # NB: The configure --without-* flags just disable building any runtime libs
   # for the generated code.  We only want the codegen side of things.
   with_pushd >&2 "$source_extracted_abs" \
     sh ./configure \
