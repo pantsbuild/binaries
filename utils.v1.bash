@@ -82,6 +82,9 @@ function do_extract {
     *.tar.gz)
       tar zxf "$archive_path"
       ;;
+    *.tgz)
+      tar zxf "$archive_path"
+      ;;
     *)
       die "Unrecognized file extension for compressed archive at '${archive_path}'."
       ;;
