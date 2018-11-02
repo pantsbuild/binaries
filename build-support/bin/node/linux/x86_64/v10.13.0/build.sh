@@ -2,7 +2,7 @@
 
 # Build Node.js for just this version and architecture.
 NODE_VERSION="v10.13.0"
-ARCH="darwin-x64"
+ARCH="linux-x64"
 
 tarball_name="node-${NODE_VERSION}-${ARCH}"
 
