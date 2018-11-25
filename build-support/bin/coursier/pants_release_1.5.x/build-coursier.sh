@@ -15,4 +15,4 @@ git checkout -f ${VERSION} && \
 ./pants binary cli/src/main/scala-2.12:coursier-cli && \
 popd && \
 mkdir -p ${DEST_DIR} && \
-mv coursier/dist/coursier-cli.jar "${DEST_DIR}/${DEST_JAR_NAME}"
+mv ${TEMPDIR}/dist/coursier-cli.jar ${DEST_JAR_NAME}
