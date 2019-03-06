@@ -39,7 +39,7 @@ def maybe_gen(dir, go_version, arch):
         os.chmod(filename, 0755)
 
 def mac():
-    for mac_version, go_versions in mac_versions:
+    for mac_version, go_versions in mac_versions.items():
         for go_version in go_versions:
             dir = 'build-support/bin/go/mac/%s/%s' % (mac_version, go_version)
             maybe_gen(dir, go_version, 'darwin-amd64')
