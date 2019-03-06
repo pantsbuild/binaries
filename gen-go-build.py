@@ -8,18 +8,21 @@ import os
 from textwrap import dedent
 
 go_versions = [
-    '1.9.4',
-    '1.10',
+    '1.9.7',
+    '1.10.8',
+    '1.11.5',
+    '1.12',
 ]
 
-mac_versions = [
-    '10.8',
-    '10.9',
-    '10.10',
-    '10.11',
-    '10.12',
-    '10.13',
-]
+mac_versions = {
+    '10.8': ['1.9.7', '1.10.8'],
+    '10.9': ['1.10.8'],
+    '10.10': ['1.10.8', '1.11.5', '1.12'],
+    '10.11': ['1.10.8', '1.11.5', '1.12'],
+    '10.12': ['1.10.8', '1.11.5', '1.12'],
+    '10.13': ['1.10.8', '1.11.5', '1.12'],
+    '10.14': ['1.10.8', '1.11.5', '1.12'],
+}
 
 tmpl = dedent("""\
     #!/bin/bash
@@ -36,8 +39,8 @@ def maybe_gen(dir, go_version, arch):
         os.chmod(filename, 0755)
 
 def mac():
-    for mac_version in mac_versions:
-        for go_version in go_versions:
+    for mac_version, mac_go_versions in mac_versions.items():
+        for go_version in mac_go_versions:
             dir = 'build-support/bin/go/mac/%s/%s' % (mac_version, go_version)
             maybe_gen(dir, go_version, 'darwin-amd64')
 
