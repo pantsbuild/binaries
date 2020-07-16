@@ -1,17 +1,12 @@
 #!/bin/sh
 
-VERSION=${1-:"v8.6.0"}
+VERSION=${1-:"v12.18.2"}
 
-CURRENT_MAC_VERSION="10.13"
+CURRENT_MAC_VERSION="10.15"
 
 ADDITIONAL_MAC_VERSIONS=(
-  10.6
-  10.7
-  10.8
-  10.9
-  10.10
-  10.11
-  10.12
+  10.13
+  10.14
 )
 
 # ARCHES and DESTINATION_DIRECTORIES must be the same length.
