@@ -1,12 +1,10 @@
 #!/bin/sh
 
-VERSION=${1-:"v8.6.0"}
+VERSION=${1:-"v8.11.1"}
 
 CURRENT_MAC_VERSION="10.13"
 
 ADDITIONAL_MAC_VERSIONS=(
-  10.6
-  10.7
   10.8
   10.9
   10.10
