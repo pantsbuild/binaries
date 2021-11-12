@@ -39,7 +39,7 @@ linux
 
 1. Change directories to the root of this repository, and run:
   ```
-  docker run -v "$(pwd):/pantsbuild-binaries" -w '/pantsbuild-binaries' --rm -it pantsbuild/centos6:latest /bin/bash
+  docker run -v "$(pwd):/pantsbuild-binaries" -w '/pantsbuild-binaries' --rm -it pantsbuild/centos7:latest /bin/bash
   ```
   ...to pop yourself in a controlled image back at this repo's root.
 
